@@ -1,0 +1,78 @@
+data_dir: "/zeron-vepfs/tj/minghao.liang/gpudrive_processed/training/"
+num_worlds: 1
+k_unique_scenes: 129023
+device: "cuda"  # or "cpu"
+track: true
+reward_type: "weighted_combination"
+
+# [由 C++ 负责] - 在 Python 端设为 0
+reward_weight_off_road: 0.0   # C++ sim.cpp 已经扣了 -10.0 / -0.05
+reward_weight_collision: 0.0  # 建议也在 C++ 处理，或者保持现状
+
+# [由 Python 负责] - 在 Python 端设置具体数值
+reward_weight_goal: 20.0      # 到达终点
+reward_weight_speed: 0.0    # 鼓励移动
+reward_weight_goal_dist: 0.5  # 鼓励靠近 (Shaping)
+remove_non_vehicles: false
+polyline_reduction_threshold: 0.1
+observation_radius: 50.0
+collision_behavior: "ignore" # Options: "remove", "stop", "ignore"
+
+resample_scenes: true
+resample_dataset_size: 129000 # Number of unique scenes to sample from
+resample_freq: 5000_000
+resample_criterion: "global_step"
+sample_with_replacement: true
+shuffle_dataset: true
+
+track_time_to_solve: false
+
+sync_tensorboard: true
+logging_collection_window: 100
+log_freq: 100
+project_name: "gpudrive"
+group_name: "my_experiment"
+entity: " "
+tags:
+  - "ppo"
+wandb_mode: "online"  # Options: online, offline, disabled
+
+episode_len: 512 # Length of an episode in the simulator
+
+save_policy: true
+save_policy_freq: 200
+
+seed: 42
+gamma: 0.99
+gae_lambda: 0.95
+clip_range: 0.2
+clip_range_vf: null
+vf_coef: 0.5
+n_steps: 512  # Number of steps per rollout
+num_minibatches: 64  # Used to determine the minibatch size
+verbose: 1
+total_timesteps: 20000000000
+ent_coef: 0.01
+lr: 0.0003
+n_epochs: 5
+
+mlp_class: "late_fusion"
+policy: "late_fusion_policy"
+ego_state_layers:
+  - 64
+  - 32
+road_object_layers:
+  - 64
+  - 64
+road_graph_layers:
+  - 64
+  - 64
+shared_layers:
+  - 64
+  - 64
+act_func: "tanh"
+dropout: 0.0
+last_layer_dim_pi: 64
+last_layer_dim_vf: 64
+resume_from : '/root/code/gpudrive/policy_2000088008.zip'
+enable_visualization : True 
