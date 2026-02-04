@@ -90,7 +90,7 @@ class EnvConfig:
 
     # Collision behavior settings
     collision_behavior: str = "remove"  # Options: "remove", "stop", "ignore"
-
+    enable_procedural_generation: bool = False
     # Scene configuration
     remove_non_vehicles: bool = True  # Remove non-vehicle entities from scene
 
@@ -98,22 +98,35 @@ class EnvConfig:
     init_steps: int = 0
 
     # Reward settings
-    reward_type: str = "sparse_on_goal_achieved"
-    # Alternatively, "weighted_combination", "distance_to_logs", "distance_to_vdb_trajs", "reward_conditioned"
+    # reward_type: str = "sparse_on_goal_achieved"
+    # # Alternatively, "weighted_combination", "distance_to_logs", "distance_to_vdb_trajs", "reward_conditioned"
 
-    condition_mode: str = "random"  # Options: "random", "fixed", "preset"
+    # condition_mode: str = "random"  # Options: "random", "fixed", "preset"
 
-    # Define upper and lower bounds for reward components if using reward_conditioned
-    collision_weight_lb: float = -1.0
-    collision_weight_ub: float = 0.0
-    goal_achieved_weight_lb: float = 1.0
-    goal_achieved_weight_ub: float = 2.0
-    off_road_weight_lb: float = -1.0
-    off_road_weight_ub: float = 0.0
+    # # Define upper and lower bounds for reward components if using reward_conditioned
+    # collision_weight_lb: float = -3.0
+    # collision_weight_ub: float = 0.0
+    # goal_achieved_weight_lb: float = 2.0
+    # goal_achieved_weight_ub: float = 12.0
+    # off_road_weight_lb: float = -3.0
+    # off_road_weight_ub: float = 0.0
+    reward_type: str = "weighted_combination" 
 
-    dist_to_goal_threshold: float = (
-        2.0  # Radius around goal considered as "goal achieved"
-    )
+    # 这样 ppo_base_sb3.yaml 里的值可以直接覆盖这些默认值
+    dist_to_goal_threshold: float = 1.0  
+    
+    reward_weight_progress: float = 0.05
+    # reward_weight_goal: float = 10.0
+    reward_weight_goal: float = 20.0
+    reward_weight_collision: float = -10.0
+    reward_weight_off_road: float = -5.0
+    # reward_weight_off_road: float = 0.0
+    reward_weight_still: float = 0.0
+    reward_weight_speed: float = 0.0      
+    reward_weight_goal_dist: float = 0.05
+    # dist_to_goal_threshold: float = (
+    #     2.0  # Radius around goal considered as "goal achieved"
+    # )
 
     # C++ and Python shared settings (modifiable via C++ codebase)
     max_num_agents_in_scene: int = (
@@ -183,6 +196,7 @@ class RenderMode(Enum):
     MATPLOTLIB = "matplotlib"
     MADRONA_RGB = "madrona_rgb"
     MADRONA_DEPTH = "madrona_depth"
+    RGB_ARRAY = "rgb_array"
 
 
 class MadronaOption(Enum):

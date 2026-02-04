@@ -108,6 +108,7 @@ class GPUDriveGymEnv(gym.Env, metaclass=abc.ABCMeta):
         )
 
         params = madrona_gpudrive.Parameters()
+        params.enableProceduralGeneration = self.config.enable_procedural_generation
         
         params.polylineReductionThreshold = (
             self.config.polyline_reduction_threshold
@@ -158,11 +159,13 @@ class GPUDriveGymEnv(gym.Env, metaclass=abc.ABCMeta):
 
         return params
 
-    def _initialize_simulator(self, params, data_batch):
+    def _initialize_simulator(self, params, data_batch, sim_scenes=None):
         """Initializes the simulation with the specified parameters.
 
         Args:
             params (object): Parameters for initializing the simulation.
+            data_batch (list): Legacy batch of data (legacy support).
+            sim_scenes (list, optional): List of map paths for JSON loading.
 
         Returns:
             SimManager: A simulation manager instance configured with given parameters.
@@ -173,10 +176,14 @@ class GPUDriveGymEnv(gym.Env, metaclass=abc.ABCMeta):
             else madrona_gpudrive.madrona.ExecMode.CUDA
         )
 
+        # [GIGAFLOW 修改] 决定使用哪个场景列表
+        # 如果传递了 sim_scenes (新流程)，则使用它；否则回退到 data_batch
+        scenes_to_load = sim_scenes if sim_scenes is not None else data_batch
+
         sim = madrona_gpudrive.SimManager(
             exec_mode=exec_mode,
             gpu_id=0,
-            scenes=data_batch,
+            scenes=scenes_to_load, # 使用确定的场景列表
             params=params,
             enable_batch_renderer=self.render_config
             and self.render_config.render_mode
